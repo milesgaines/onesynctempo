@@ -1,0 +1,35 @@
+-- Add extended fields to tracks table
+ALTER TABLE tracks
+  -- Release Info Fields
+  ADD COLUMN IF NOT EXISTS release_title TEXT,
+  ADD COLUMN IF NOT EXISTS primary_artist TEXT,
+  ADD COLUMN IF NOT EXISTS display_artist TEXT,
+  ADD COLUMN IF NOT EXISTS featured_artist TEXT,
+  ADD COLUMN IF NOT EXISTS label TEXT,
+  ADD COLUMN IF NOT EXISTS cat_number TEXT,
+  ADD COLUMN IF NOT EXISTS main_genre TEXT,
+  ADD COLUMN IF NOT EXISTS sub_genre TEXT,
+  ADD COLUMN IF NOT EXISTS release_type TEXT CHECK (release_type IN ('Album', 'EP', 'Single')),
+  ADD COLUMN IF NOT EXISTS upc TEXT,
+  ADD COLUMN IF NOT EXISTS countries TEXT[],
+  ADD COLUMN IF NOT EXISTS is_worldwide BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS copyrights TEXT,
+  ADD COLUMN IF NOT EXISTS release_notes TEXT,
+  ADD COLUMN IF NOT EXISTS original_release_date DATE,
+  ADD COLUMN IF NOT EXISTS retailers TEXT[],
+  ADD COLUMN IF NOT EXISTS exclusive_for TEXT,
+  ADD COLUMN IF NOT EXISTS allow_preorder_itunes BOOLEAN DEFAULT FALSE,
+  
+  -- Track Info Fields
+  ADD COLUMN IF NOT EXISTS track_number INTEGER,
+  ADD COLUMN IF NOT EXISTS track_display_artist TEXT,
+  ADD COLUMN IF NOT EXISTS track_featured_artist TEXT,
+  ADD COLUMN IF NOT EXISTS mix_version TEXT,
+  ADD COLUMN IF NOT EXISTS remixer TEXT,
+  ADD COLUMN IF NOT EXISTS track_main_genre TEXT,
+  ADD COLUMN IF NOT EXISTS track_sub_genre TEXT,
+  ADD COLUMN IF NOT EXISTS publisher TEXT,
+  ADD COLUMN IF NOT EXISTS contributors TEXT[],
+  ADD COLUMN IF NOT EXISTS lyricist TEXT NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS composer TEXT NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS album_only BOOLEAN DEFAULT FALSE;
