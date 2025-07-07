@@ -194,7 +194,7 @@ const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
 
             // Convert to chart format
             const platformEntries = Object.entries(platformStats).sort(
-              (a, b) => b[1].revenue - a[1].revenue,
+              ([, a], [, b]) => b.revenue - a.revenue,
             );
             const geoEntries = Object.entries(geoStats)
               .sort((a, b) => b[1] - a[1])

@@ -244,7 +244,7 @@ const ChartmetricEndpointTester: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Status:</span>
               {isAuthenticated ? (
-                <Badge variant="success" className="bg-green-500">
+                <Badge className="bg-green-500">
                   <CheckCircle className="mr-1 h-3 w-3" /> Connected
                 </Badge>
               ) : (

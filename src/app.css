@@ -22,8 +22,8 @@ body,
   --card-foreground: 0 0% 95%;
   --popover: 0 0% 6%;
   --popover-foreground: 0 0% 95%;
-  --primary: 200 100% 50%;
-  --primary-rgb: 0, 191, 255;
+  --primary: 270 100% 50%;
+  --primary-rgb: 102, 51, 153;
   --primary-foreground: 0 0% 98%;
   --secondary: 0 0% 12%;
   --secondary-foreground: 0 0% 90%;
@@ -35,11 +35,11 @@ body,
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 18%;
   --input: 0 0% 12%;
-  --ring: 200 100% 50%;
-  --neon-cyan: 180 100% 50%;
-  --neon-blue: 200 100% 60%;
-  --neon-steel: 210 20% 70%;
-  --cyber-accent: 195 100% 75%;
+  --ring: 270 100% 50%;
+  --neon-purple: 270 100% 50%;
+  --neon-violet: 280 100% 60%;
+  --neon-steel: 0 0% 70%;
+  --cyber-accent: 270 100% 75%;
 }
 
 /* Ensure cool dark futuristic theme is applied */
@@ -50,8 +50,8 @@ body,
   --card-foreground: 0 0% 95%;
   --popover: 0 0% 6%;
   --popover-foreground: 0 0% 95%;
-  --primary: 200 100% 50%;
-  --primary-rgb: 0, 191, 255;
+  --primary: 270 100% 50%;
+  --primary-rgb: 102, 51, 153;
   --primary-foreground: 0 0% 98%;
   --secondary: 0 0% 12%;
   --secondary-foreground: 0 0% 90%;
@@ -63,9 +63,9 @@ body,
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 18%;
   --input: 0 0% 12%;
-  --ring: 200 100% 50%;
-  --neon-cyan: 180 100% 50%;
-  --neon-blue: 200 100% 60%;
-  --neon-steel: 210 20% 70%;
-  --cyber-accent: 195 100% 75%;
+  --ring: 270 100% 50%;
+  --neon-purple: 270 100% 50%;
+  --neon-violet: 280 100% 60%;
+  --neon-steel: 0 0% 70%;
+  --cyber-accent: 270 100% 75%;
 }
