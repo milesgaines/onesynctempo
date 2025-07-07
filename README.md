@@ -9,7 +9,7 @@ Install Node.js (version 18 or later) and install dependencies before executing 
 ```bash
 npm install
 npm run dev
-npm run build
+npm run build # ensures TypeScript compiles and vite builds correctly
 ```
 
 Currently, two official plugins are available:
