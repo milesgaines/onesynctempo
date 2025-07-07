@@ -488,7 +488,7 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
             `Loaded ${processedReleases.length} releases from database`,
           );
         } else {
-          toast.info("No releases found. Upload your first track!");
+          toast("No releases found. Upload your first track!");
         }
       }
     } catch (error) {
@@ -962,7 +962,7 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
                 primary_artist: updateData.primary_artist,
                 display_artist: updateData.display_artist,
                 featured_artist: updateData.featured_artist,
-                release_type: updateData.release_type,
+                release_type: updateData.release_type as Release["release_type"],
                 main_genre: updateData.main_genre,
                 sub_genre: updateData.sub_genre,
                 release_date: updateData.release_date,
@@ -1289,8 +1289,8 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
             <FileDown className="mr-2 h-4 w-4" />
             Export CSV
           </Button>
-          <Button
-            variant="gradient"
+            <Button
+              variant="glow"
             className="animate-pulse-slow"
             onClick={() => {
               // Dispatch a custom event to trigger the upload dialog
@@ -1460,8 +1460,8 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
                   : `No ${filter} releases found in the database.`}
               </p>
               <div className="space-y-4">
-                <Button
-                  variant="gradient"
+                  <Button
+                    variant="glow"
                   onClick={() => {
                     // Dispatch a custom event to trigger the upload dialog
                     console.log(

@@ -395,7 +395,11 @@ const HomePage = () => {
                 onLoad={() =>
                   console.log(
                     "✅ [LOGO] Logo loaded successfully from:",
-                    document.querySelector('img[alt="OneSync Logo"]')?.src,
+                    (
+                      document.querySelector(
+                        'img[alt="OneSync Logo"]',
+                      ) as HTMLImageElement | null
+                    )?.src,
                   )
                 }
               />
@@ -799,7 +803,11 @@ const HomePage = () => {
                   onLoad={() =>
                     console.log(
                       "✅ [MOBILE LOGO] Mobile logo loaded successfully from:",
-                      document.querySelector('img[alt="OneSync Logo"]')?.src,
+                      (
+                        document.querySelector(
+                          'img[alt="OneSync Logo"]',
+                        ) as HTMLImageElement | null
+                      )?.src,
                     )
                   }
                 />
@@ -1132,7 +1140,7 @@ const HomePage = () => {
                                   ) {
                                     window.Intercom("show");
                                   } else {
-                                    Intercom("show");
+                                    (Intercom as any)("show");
                                   }
                                   // Refresh unread count after opening
                                   setTimeout(() => {
@@ -1365,16 +1373,16 @@ const HomePage = () => {
                                     if (
                                       typeof window !== "undefined" &&
                                       window.Intercom
-                                    ) {
-                                      window.Intercom(
-                                        "showNewMessage",
-                                        "Hi! I'd like to be notified when the Beat Store launches. Please add me to the notification list.",
-                                      );
-                                    } else {
-                                      Intercom(
-                                        "showNewMessage",
-                                        "Hi! I'd like to be notified when the Beat Store launches. Please add me to the notification list.",
-                                      );
+                                      ) {
+                                        window.Intercom(
+                                          "showNewMessage",
+                                          "Hi! I'd like to be notified when the Beat Store launches. Please add me to the notification list.",
+                                        );
+                                      } else {
+                                        (Intercom as any)(
+                                          "showNewMessage",
+                                          "Hi! I'd like to be notified when the Beat Store launches. Please add me to the notification list.",
+                                        );
                                     }
                                   } catch (error) {
                                     console.error(

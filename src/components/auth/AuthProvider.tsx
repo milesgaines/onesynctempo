@@ -110,7 +110,7 @@ export function AuthProvider({
         );
 
         // Create user profile if new user
-        if (event === "SIGNED_UP" && session?.user) {
+        if (event === "SIGNED_IN" && session?.user) {
           console.log(
             "👤 [AUTH] Creating user profile for new user:",
             session.user.email,

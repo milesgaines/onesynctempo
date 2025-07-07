@@ -1,11 +1,4 @@
 import React, { useState, useEffect } from "react";
-
-// Add Intercom type definition
-declare global {
-  interface Window {
-    Intercom?: (command: string, ...args: any[]) => void;
-  }
-}
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -85,12 +78,12 @@ interface PaymentHistoryItem {
   reference: string;
 }
 
-interface WithdrawalRequest {
+interface PendingWithdrawal {
   id: string;
   date: string;
   amount: number;
   method: string;
-  status: "pending" | "approved" | "completed" | "rejected";
+  status: "pending" | "approved" | "completed" | "rejected" | "processing";
 }
 
 const EarningsManager: React.FC<EarningsManagerProps> = () => {
@@ -115,7 +108,7 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
     [],
   );
   const [pendingWithdrawals, setPendingWithdrawals] = useState<
-    WithdrawalRequest[]
+    PendingWithdrawal[]
   >([]);
   const [royaltyAdvances, setRoyaltyAdvances] = useState<RoyaltyAdvance[]>([]);
   const [totalAdvanceAmount, setTotalAdvanceAmount] = useState<number>(0);
@@ -397,7 +390,7 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
       if (updateError) throw updateError;
 
       // Update local state
-      const newWithdrawal = {
+      const newWithdrawal: PendingWithdrawal = {
         id: withdrawal.id,
         date: withdrawal.created_at.split("T")[0],
         amount: withdrawal.amount,

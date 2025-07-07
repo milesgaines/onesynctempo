@@ -212,11 +212,15 @@ export async function getConsolidatedAnalytics(params: {
     return {
       platformStats,
       geoStats,
-      totalPlays: Object.values(platformStats).reduce(
+      totalPlays: (Object.values(
+        platformStats,
+      ) as { plays: number; revenue: number }[]).reduce(
         (sum, p) => sum + p.plays,
         0,
       ),
-      totalRevenue: Object.values(platformStats).reduce(
+      totalRevenue: (Object.values(
+        platformStats,
+      ) as { plays: number; revenue: number }[]).reduce(
         (sum, p) => sum + p.revenue,
         0,
       ),
