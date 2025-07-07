@@ -1273,7 +1273,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const canProceed = () => {
     switch (currentStep) {
       case 0:
-        return data.role !== "";
+        return Boolean(data.role);
       case 1:
         const basicInfoValid = data.name.trim() !== "";
         if (data.role === "artist") {

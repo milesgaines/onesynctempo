@@ -193,14 +193,22 @@ const AnalyticsCharts: React.FC<AnalyticsChartsProps> = ({
             );
 
             // Convert to chart format
-            const platformEntries = Object.entries(platformStats).sort(
-              ([, a], [, b]) => b.revenue - a.revenue,
-            );
-            const geoEntries = Object.entries(geoStats)
+            const platformEntries = (
+              Object.entries(platformStats) as [
+                string,
+                { plays: number; revenue: number }
+              ][]
+            ).sort(([, a], [, b]) => b.revenue - a.revenue);
+
+            const geoEntries = (
+              Object.entries(geoStats) as [string, number][]
+            )
               .sort((a, b) => b[1] - a[1])
               .slice(0, 10);
 
-            const totalRevenue = Object.values(platformStats).reduce(
+            const totalRevenue = (Object.values(
+              platformStats,
+            ) as { plays: number; revenue: number }[]).reduce(
               (sum, stats) => sum + stats.revenue,
               0,
             );
