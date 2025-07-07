@@ -447,12 +447,6 @@ const MusicUploader: React.FC<MusicUploaderProps> = ({
         .upload(path, file, {
           cacheControl: "3600",
           upsert: true,
-          onUploadProgress: (progress) => {
-            const progressPercentage = Math.round(
-              (progress.loaded / file.size) * 100,
-            );
-            if (onProgress) onProgress(progressPercentage);
-          },
         });
 
       if (error) {
@@ -469,12 +463,6 @@ const MusicUploader: React.FC<MusicUploaderProps> = ({
             .upload(path, file, {
               cacheControl: "3600",
               upsert: true,
-              onUploadProgress: (progress) => {
-                const progressPercentage = Math.round(
-                  (progress.loaded / file.size) * 100,
-                );
-                if (onProgress) onProgress(progressPercentage);
-              },
             });
 
           if (retryResult.error) {
@@ -827,7 +815,6 @@ const MusicUploader: React.FC<MusicUploaderProps> = ({
         // Additional schema fields with defaults
         duration: null, // Will be calculated later if needed
         country: null, // Single country field if needed
-        artist_id: selectedPrimaryArtist?.id || null, // Fixed: Use selected artist ID
         isrc: null, // International Standard Recording Code
         exclusive_on_shop: false,
         price_tiers: null,

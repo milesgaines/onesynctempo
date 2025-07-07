@@ -202,7 +202,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             {} as Record<string, { plays: number; revenue: number }>,
           );
 
-          const platformDataArray = Object.entries(platformStats)
+          const platformDataArray = (
+            Object.entries(platformStats) as [
+              string,
+              { plays: number; revenue: number }
+            ][]
+          )
             .map(([platform, stats]) => ({
               name: platform,
               plays: stats.plays,

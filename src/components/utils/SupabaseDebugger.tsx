@@ -35,7 +35,6 @@ const SupabaseDebugger: React.FC<SupabaseDebuggerProps> = ({ onComplete }) => {
     // Test 1: Connection with detailed diagnostics
     try {
       console.log("🔍 [DEBUG] Testing Supabase connection...");
-      console.log("🔍 [DEBUG] Using Supabase URL:", supabase.supabaseUrl);
 
       const { error } = await supabase.from("tracks").select("count").limit(1);
 
