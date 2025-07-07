@@ -4,6 +4,8 @@ import HomePage from "./components/home";
 import DashboardOverview from "./components/dashboard/DashboardOverview";
 import MusicUploader from "./components/upload/MusicUploader";
 import EarningsManager from "./components/earnings/EarningsManager";
+
+// Re-import to ensure proper module loading
 import LoginForm from "./components/auth/LoginForm";
 import AuthCallback from "./components/auth/callback";
 import SpotifyCallback from "./components/auth/SpotifyCallback";
@@ -129,6 +131,7 @@ function AppContent() {
           <Route path="/dashboard" element={<DashboardOverview />} />
           <Route path="/upload" element={<MusicUploader />} />
           <Route path="/earnings" element={<EarningsManager />} />
+
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/spotify-callback" element={<SpotifyCallback />} />
 

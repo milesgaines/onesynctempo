@@ -443,6 +443,9 @@ export interface StripePayout {
   type: string;
 }
 
+// This file now contains only Stripe and Trolley API related code.
+// SpotOnTrack API functions have been moved to src/lib/spotOnTrackApi.ts
+
 // Royalty Advance API Functions
 export async function getRoyaltyAdvances() {
   try {

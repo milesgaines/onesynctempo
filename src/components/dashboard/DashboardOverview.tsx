@@ -24,6 +24,7 @@ import {
   LineChart as LineChartIcon,
   Calendar,
   Download,
+  DollarSign,
 } from "lucide-react";
 import AnalyticsCharts from "./AnalyticsCharts";
 import { supabase, Analytics, Track, UserProfile } from "@/lib/supabaseClient";
@@ -304,8 +305,22 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       }
     };
 
-    loadAnalyticsData();
-    onTimeRangeChange(timeRange);
+    // Add error boundary for the async function
+    loadAnalyticsData().catch((error) => {
+      console.error(
+        "❌ [DASHBOARD] Unhandled error in loadAnalyticsData:",
+        error,
+      );
+      setIsLoading(false);
+      setDataLoaded(true);
+    });
+
+    // Safely call onTimeRangeChange
+    try {
+      onTimeRangeChange(timeRange);
+    } catch (error) {
+      console.error("❌ [DASHBOARD] Error in onTimeRangeChange:", error);
+    }
   }, [
     timeRange,
     initialRevenueData,
@@ -315,39 +330,84 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   ]);
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-background">
-      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8 pb-20">
-        {/* Header section with improved positioning */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+    <div className="w-full h-full overflow-y-auto bg-black relative">
+      {/* Dynamic animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl animate-pulse"
+          style={{ animationDuration: "4s" }}
+        ></div>
+        <div
+          className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-white/[0.01] rounded-full blur-3xl animate-pulse"
+          style={{ animationDuration: "6s", animationDelay: "2s" }}
+        ></div>
+        <div
+          className="absolute top-1/2 right-1/4 w-64 h-64 bg-white/[0.015] rounded-full blur-3xl animate-pulse"
+          style={{ animationDuration: "5s", animationDelay: "1s" }}
+        ></div>
+        {/* Animated grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+            backgroundSize: "40px 40px",
+            animation: "gridMove 20s linear infinite",
+          }}
+        ></div>
+      </div>
+      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8 pb-20 relative z-10">
+        {/* Bold header section */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
           <div className="flex-1 min-w-0 relative mb-4 lg:mb-0">
-            <div className="relative pr-16">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                Dashboard
+            <div className="relative pr-20">
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white animate-fade-in">
+                DASHBOARD
               </h1>
-              <span className="absolute top-0 right-0 text-xs bg-primary text-white px-2 py-1 rounded-full animate-pulse">
-                Live
-              </span>
+              <div className="absolute top-2 right-0 flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-400 font-mono font-bold tracking-wider">
+                  LIVE
+                </span>
+              </div>
             </div>
-            <p className="text-muted-foreground mt-2">
-              Monitor your music performance and revenue.
+            <p className="text-gray-400 mt-3 text-xl font-medium">
+              Real-time performance metrics
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0 w-full lg:w-auto">
+          <div className="flex items-center gap-3 flex-shrink-0 w-full lg:w-auto">
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-full lg:w-[180px]">
+              <SelectTrigger className="w-full lg:w-[180px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 transition-all duration-200">
                 <SelectValue placeholder="Select time range" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-                <SelectItem value="90d">Last 90 days</SelectItem>
-                <SelectItem value="12m">Last 12 months</SelectItem>
+              <SelectContent className="bg-gray-900 border-gray-700">
+                <SelectItem value="7d" className="text-white hover:bg-gray-800">
+                  Last 7 days
+                </SelectItem>
+                <SelectItem
+                  value="30d"
+                  className="text-white hover:bg-gray-800"
+                >
+                  Last 30 days
+                </SelectItem>
+                <SelectItem
+                  value="90d"
+                  className="text-white hover:bg-gray-800"
+                >
+                  Last 90 days
+                </SelectItem>
+                <SelectItem
+                  value="12m"
+                  className="text-white hover:bg-gray-800"
+                >
+                  Last 12 months
+                </SelectItem>
               </SelectContent>
             </Select>
             <Button
               variant="outline"
               size="icon"
-              className="hover:bg-primary/10"
+              className="bg-gray-900 border-gray-700 text-white hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-110"
               onClick={() => {
                 console.log("Calendar button clicked");
                 const today = new Date();
@@ -364,7 +424,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             <Button
               variant="outline"
               size="icon"
-              className="hover:bg-primary/10"
+              className="bg-gray-900 border-gray-700 text-white hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-110"
               onClick={() => {
                 console.log("Download button clicked");
                 try {
@@ -413,33 +473,36 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           </div>
         </div>
 
-        {/* Stats cards with fixed heights */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Revenue
+        {/* Bold animated stats cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 animate-slide-up">
+          <Card className="overflow-hidden border-gray-800 bg-gray-900/80 hover:bg-gray-900 transition-all duration-500 animate-scale-in group hover:scale-105 hover:shadow-2xl">
+            <CardHeader className="pb-3 pt-6 px-6 relative">
+              <div className="absolute top-4 right-4 w-12 h-12 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <DollarSign className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                TOTAL REVENUE
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4">
+            <CardContent className="px-6 pb-6">
               <div className="flex items-baseline justify-between">
                 <div className="text-2xl font-bold">
                   {isLoading && !dataLoaded ? (
-                    <div className="h-8 w-28 bg-muted/20 animate-pulse rounded"></div>
+                    <div className="h-10 w-32 bg-gray-700 animate-pulse rounded-lg"></div>
                   ) : (
-                    <span className="text-white">
+                    <span className="text-4xl font-black text-white tracking-tight">
                       {revenueData.total.amount}
                     </span>
                   )}
                 </div>
                 {(!isLoading || dataLoaded) && (
                   <div
-                    className={`flex items-center text-sm ${revenueData.total.trend === "up" ? "text-green-500" : "text-red-500"}`}
+                    className={`flex items-center text-sm font-bold px-3 py-2 rounded-lg ${revenueData.total.trend === "up" ? "text-green-400 bg-green-400/10" : "text-red-400 bg-red-400/10"}`}
                   >
                     {revenueData.total.trend === "up" ? (
-                      <ArrowUpRight className="h-4 w-4 mr-1" />
+                      <ArrowUpRight className="h-5 w-5 mr-1 animate-bounce" />
                     ) : (
-                      <ArrowDownRight className="h-4 w-4 mr-1" />
+                      <ArrowDownRight className="h-5 w-5 mr-1 animate-bounce" />
                     )}
                     {Math.abs(revenueData.total.change).toFixed(1)}%
                   </div>
@@ -448,19 +511,22 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Plays
+          <Card className="overflow-hidden border-gray-800 bg-gray-900/80 hover:bg-gray-900 transition-all duration-500 animate-scale-in group hover:scale-105 hover:shadow-2xl">
+            <CardHeader className="pb-3 pt-6 px-6 relative">
+              <div className="absolute top-4 right-4 w-12 h-12 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                TOTAL PLAYS
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4">
+            <CardContent className="px-6 pb-6">
               <div className="flex items-baseline justify-between">
                 <div className="text-2xl font-bold">
                   {isLoading && !dataLoaded ? (
-                    <div className="h-8 w-28 bg-muted/20 animate-pulse rounded"></div>
+                    <div className="h-10 w-32 bg-gray-700 animate-pulse rounded-lg"></div>
                   ) : (
-                    <span className="text-white">
+                    <span className="text-4xl font-black text-white tracking-tight">
                       {formatNumber(
                         platformData.reduce((sum, p) => sum + p.plays, 0),
                       )}
@@ -468,49 +534,57 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                   )}
                 </div>
                 {(!isLoading || dataLoaded) && (
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <span className="text-xs">No trend data</span>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Active Platforms
+          <Card className="overflow-hidden border-gray-800 bg-gray-900/80 hover:bg-gray-900 transition-all duration-500 animate-scale-in group hover:scale-105 hover:shadow-2xl">
+            <CardHeader className="pb-3 pt-6 px-6 relative">
+              <div className="absolute top-4 right-4 w-12 h-12 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <PieChart className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                PLATFORMS
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4">
+            <CardContent className="px-6 pb-6">
               <div className="flex items-baseline justify-between">
                 <div className="text-2xl font-bold">
                   {isLoading && !dataLoaded ? (
-                    <div className="h-8 w-28 bg-muted/20 animate-pulse rounded"></div>
+                    <div className="h-10 w-32 bg-gray-700 animate-pulse rounded-lg"></div>
                   ) : (
-                    <span className="text-white">{platformData.length}</span>
+                    <span className="text-4xl font-black text-white tracking-tight">
+                      {platformData.length}
+                    </span>
                   )}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  Streaming services
+                <div className="text-xs text-gray-500 font-mono uppercase tracking-wider">
+                  ACTIVE
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Avg. Revenue/Play
+          <Card className="overflow-hidden border-gray-800 bg-gray-900/80 hover:bg-gray-900 transition-all duration-500 animate-scale-in group hover:scale-105 hover:shadow-2xl">
+            <CardHeader className="pb-3 pt-6 px-6 relative">
+              <div className="absolute top-4 right-4 w-12 h-12 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <LineChartIcon className="h-6 w-6 text-white" />
+              </div>
+              <CardTitle className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                AVG RATE
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4">
+            <CardContent className="px-6 pb-6">
               <div className="flex items-baseline justify-between">
                 <div className="text-2xl font-bold">
                   {isLoading && !dataLoaded ? (
-                    <div className="h-8 w-28 bg-muted/20 animate-pulse rounded"></div>
+                    <div className="h-10 w-32 bg-gray-700 animate-pulse rounded-lg"></div>
                   ) : (
-                    <span className="text-white">
+                    <span className="text-4xl font-black text-white tracking-tight">
                       $
                       {platformData.reduce((sum, p) => sum + p.plays, 0) > 0
                         ? (
@@ -528,117 +602,144 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  per 1K plays
+                <div className="text-xs text-gray-500 font-mono uppercase tracking-wider">
+                  /1K
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Analytics chart with fixed height */}
-        <Card className="overflow-hidden">
-          <CardHeader className="pt-4 px-6 pb-2">
-            <CardTitle>Analytics Overview</CardTitle>
-            <CardDescription>
-              Comprehensive view of your music performance
+        {/* Bold analytics chart */}
+        <Card className="overflow-hidden border-gray-800 bg-gray-900/80 transition-all duration-500 animate-fade-in hover:bg-gray-900 group">
+          <CardHeader className="pt-6 px-8 pb-4 relative">
+            <div className="absolute top-6 right-6 w-14 h-14 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+              <BarChart3 className="h-7 w-7 text-white" />
+            </div>
+            <CardTitle className="text-2xl font-black text-white uppercase tracking-wide">
+              ANALYTICS
+            </CardTitle>
+            <CardDescription className="text-lg text-gray-400 font-medium">
+              Performance metrics overview
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4 pb-4">
             <div className="h-[450px] w-full">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
-                  <img
-                    src="/spinning-loader.png"
-                    alt="Loading"
-                    className="h-12 w-12 animate-spin brightness-150"
-                  />
+                  <div className="relative">
+                    <img
+                      src="/spinning-loader.png"
+                      alt="Loading"
+                      className="h-16 w-16 animate-spin brightness-150 drop-shadow-lg"
+                      onError={(e) => {
+                        console.warn("Loading image not found, using fallback");
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+                  </div>
                 </div>
               ) : (
-                <AnalyticsCharts
-                  data={{
-                    plays: {
-                      labels: platformData.map((p) => p.name),
-                      values: platformData.map((p) => p.plays),
-                    },
-                    revenue: {
-                      labels: platformData.map((p) => p.name),
-                      values: platformData.map((p) => p.revenue),
-                    },
-                    geography: {
-                      countries: [],
-                      values: [],
-                    },
-                    platforms: {
-                      names: platformData.map((p) => p.name),
-                      values: platformData.map((p) => p.percentage),
-                    },
-                  }}
-                />
+                <div className="w-full h-full">
+                  <AnalyticsCharts
+                    data={{
+                      plays: {
+                        labels: platformData?.map((p) => p.name) || [],
+                        values: platformData?.map((p) => p.plays) || [],
+                      },
+                      revenue: {
+                        labels: platformData?.map((p) => p.name) || [],
+                        values: platformData?.map((p) => p.revenue) || [],
+                      },
+                      geography: {
+                        countries: [],
+                        values: [],
+                      },
+                      platforms: {
+                        names: platformData?.map((p) => p.name) || [],
+                        values: platformData?.map((p) => p.percentage) || [],
+                      },
+                    }}
+                  />
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Bottom cards with consistent heights */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-20">
-          <Card className="overflow-hidden h-full">
-            <CardHeader className="pt-4 px-6 pb-2">
-              <CardTitle>Top Platforms</CardTitle>
-              <CardDescription>
-                Revenue and plays breakdown by platform
+        {/* Bold bottom cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-20 animate-slide-up">
+          <Card className="overflow-hidden h-full border-gray-800 bg-gray-900/80 transition-all duration-500 hover:bg-gray-900 group">
+            <CardHeader className="pt-6 px-8 pb-4 relative">
+              <div className="absolute top-6 right-6 w-14 h-14 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <BarChart3 className="h-7 w-7 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-black text-white uppercase tracking-wide">
+                PLATFORMS
+              </CardTitle>
+              <CardDescription className="text-lg text-gray-400 font-medium">
+                Performance by platform
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-6 pb-4 overflow-y-auto max-h-[400px]">
-              <div className="space-y-4">
-                {platformData.map((platform) => (
-                  <div
-                    key={platform.name}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {platform.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {isLoading && !dataLoaded ? (
-                          <div className="h-4 w-32 bg-muted/20 animate-pulse rounded"></div>
-                        ) : (
-                          <>
-                            {formatNumber(platform.plays)} plays · $
-                            {platform.revenue.toFixed(2)}
-                          </>
-                        )}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm font-medium">
-                        {isLoading && !dataLoaded ? (
-                          <div className="h-4 w-8 bg-muted/20 animate-pulse rounded"></div>
-                        ) : (
-                          `${platform.percentage}%`
-                        )}
+            <CardContent className="px-8 pb-6 overflow-y-auto max-h-[400px]">
+              <div className="space-y-6">
+                {platformData && platformData.length > 0 ? (
+                  platformData.map((platform, index) => (
+                    <div
+                      key={`${platform.name}-${index}`}
+                      className="flex items-center justify-between p-5 rounded-xl bg-black/40 hover:bg-black/60 border border-gray-700 hover:border-white/20 transition-all duration-500 group hover:scale-105"
+                    >
+                      <div className="space-y-2">
+                        <p className="text-lg font-black leading-none text-white uppercase tracking-wide">
+                          {platform.name}
+                        </p>
+                        <p className="text-sm text-gray-400 font-mono">
+                          {isLoading && !dataLoaded ? (
+                            <div className="h-4 w-32 bg-gray-700 animate-pulse rounded"></div>
+                          ) : (
+                            <>
+                              {formatNumber(platform.plays)} plays · $
+                              {platform.revenue.toFixed(2)}
+                            </>
+                          )}
+                        </p>
                       </div>
-                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                        {isLoading && !dataLoaded ? (
-                          <div className="h-full bg-muted/40 animate-pulse"></div>
-                        ) : (
-                          <div
-                            className="h-full bg-primary"
-                            style={{ width: `${platform.percentage}%` }}
-                          />
-                        )}
+                      <div className="flex items-center gap-4">
+                        <div className="text-lg font-black text-white">
+                          {isLoading && !dataLoaded ? (
+                            <div className="h-5 w-10 bg-gray-700 animate-pulse rounded"></div>
+                          ) : (
+                            `${platform.percentage}%`
+                          )}
+                        </div>
+                        <div className="w-40 h-4 bg-gray-800 rounded-full overflow-hidden">
+                          {isLoading && !dataLoaded ? (
+                            <div className="h-full bg-gray-600 animate-pulse"></div>
+                          ) : (
+                            <div
+                              className="h-full bg-white transition-all duration-1000 ease-out rounded-full group-hover:bg-gray-300"
+                              style={{ width: `${platform.percentage}%` }}
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-400 text-lg font-medium">
+                      NO DATA AVAILABLE
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
-            <CardFooter className="px-6 pb-4 pt-2">
+            <CardFooter className="px-8 pb-6 pt-4">
               <Button
                 variant="outline"
-                size="sm"
-                className="w-full"
+                size="lg"
+                className="w-full bg-black border-gray-700 text-white hover:bg-white hover:text-black transition-all duration-300 font-bold uppercase tracking-wider"
                 onClick={() => {
                   const platformReport = {
                     reportType: "Platform Performance Report",
@@ -676,50 +777,66 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                   alert("Platform breakdown report downloaded!");
                 }}
               >
-                <BarChart3 className="h-4 w-4 mr-2" />
-                View detailed breakdown
+                <BarChart3 className="h-5 w-5 mr-3" />
+                DETAILED BREAKDOWN
               </Button>
             </CardFooter>
           </Card>
 
-          <Card className="overflow-hidden h-full">
-            <CardHeader className="pt-4 px-6 pb-2">
-              <CardTitle>Geographic Distribution</CardTitle>
-              <CardDescription>
-                Where your music is being played around the world
+          <Card className="overflow-hidden h-full border-gray-800 bg-gray-900/80 transition-all duration-500 hover:bg-gray-900 group">
+            <CardHeader className="pt-6 px-8 pb-4 relative">
+              <div className="absolute top-6 right-6 w-14 h-14 bg-black rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+                <PieChart className="h-7 w-7 text-white" />
+              </div>
+              <CardTitle className="text-2xl font-black text-white uppercase tracking-wide">
+                GEOGRAPHY
+              </CardTitle>
+              <CardDescription className="text-lg text-gray-400 font-medium">
+                Global distribution
               </CardDescription>
             </CardHeader>
             <CardContent className="px-4 pb-2">
-              <div className="h-[720px] w-full">
+              <div className="h-[320px] w-full">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-full">
-                    <img
-                      src="/spinning-loader.png"
-                      alt="Loading"
-                      className="h-12 w-12 animate-spin brightness-150"
-                    />
+                    <div className="relative">
+                      <img
+                        src="/spinning-loader.png"
+                        alt="Loading"
+                        className="h-16 w-16 animate-spin brightness-150 drop-shadow-lg"
+                        onError={(e) => {
+                          console.warn(
+                            "Loading image not found, using fallback",
+                          );
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+                    </div>
                   </div>
                 ) : (
-                  <AnalyticsCharts
-                    type="geography"
-                    data={{
-                      geography: {
-                        countries: [],
-                        values: [],
-                      },
-                      plays: { labels: [], values: [] },
-                      revenue: { labels: [], values: [] },
-                      platforms: { names: [], values: [] },
-                    }}
-                  />
+                  <div className="w-full h-full">
+                    <AnalyticsCharts
+                      type="geography"
+                      data={{
+                        geography: {
+                          countries: [],
+                          values: [],
+                        },
+                        plays: { labels: [], values: [] },
+                        revenue: { labels: [], values: [] },
+                        platforms: { names: [], values: [] },
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             </CardContent>
-            <CardFooter className="px-6 pb-6 pt-4 mt-2">
+            <CardFooter className="px-8 pb-6 pt-4 mt-2">
               <Button
                 variant="outline"
-                size="sm"
-                className="w-full"
+                size="lg"
+                className="w-full bg-black border-gray-700 text-white hover:bg-white hover:text-black transition-all duration-300 font-bold uppercase tracking-wider"
                 onClick={() => {
                   if (platformData.length === 0) {
                     alert("No geographic data available to export.");
@@ -749,8 +866,8 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                   alert("Geographic distribution report downloaded!");
                 }}
               >
-                <PieChart className="h-4 w-4 mr-2" />
-                View detailed breakdown
+                <PieChart className="h-5 w-5 mr-3" />
+                DETAILED BREAKDOWN
               </Button>
             </CardFooter>
           </Card>

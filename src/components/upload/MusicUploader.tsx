@@ -1002,9 +1002,18 @@ const MusicUploader: React.FC<MusicUploaderProps> = ({
           }),
         );
 
+        // Trigger refresh-tracks event with a delay to ensure database consistency
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent("refresh-tracks"));
-        }, 500);
+
+          // Also try to call the global refreshReleases function if available
+          // @ts-ignore - Accessing custom window method
+          if (typeof window.refreshReleases === "function") {
+            console.log("🔄 [UPLOAD] Calling global refreshReleases function");
+            // @ts-ignore - Calling custom window method
+            window.refreshReleases();
+          }
+        }, 1000);
       }
 
       // Reset form and close modal after delay

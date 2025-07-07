@@ -70,22 +70,24 @@ export class AIMasteringAPI {
     formData.append("api_key", this.apiKey);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
       const response = await fetch(`${this.baseUrl}/api/upload`, {
         method: "POST",
         body: formData,
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       console.log(
         "Upload response status:",
         response.status,
         response.statusText,
-      );
-      console.log(
-        "Upload response headers:",
-        Object.fromEntries(response.headers.entries()),
       );
 
       if (!response.ok) {
@@ -108,6 +110,11 @@ export class AIMasteringAPI {
       return uploadId;
     } catch (error) {
       console.error("Upload error:", error);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error(
+          "Upload timeout - please try again with a smaller file",
+        );
+      }
       if (error instanceof TypeError && error.message.includes("fetch")) {
         throw new Error(
           "Network error: Unable to connect to the mastering service. Please check your internet connection.",
@@ -130,29 +137,33 @@ export class AIMasteringAPI {
       enhance_bass: settings.enhanceBass,
       enhance_highs: settings.enhanceHighs,
       stereo_width: settings.stereoWidth / 100, // Convert percentage to decimal
+      priority: "high", // Request high priority processing
     };
 
     console.log("Starting processing with params:", processingParams);
     console.log("Processing API URL:", `${this.baseUrl}/api/master`);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${this.baseUrl}/api/master`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.apiKey}`,
+          "Cache-Control": "no-cache",
         },
         body: JSON.stringify(processingParams),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       console.log(
         "Processing response status:",
         response.status,
         response.statusText,
-      );
-      console.log(
-        "Processing response headers:",
-        Object.fromEntries(response.headers.entries()),
       );
 
       if (!response.ok) {
@@ -175,6 +186,9 @@ export class AIMasteringAPI {
       return jobId;
     } catch (error) {
       console.error("Processing start error:", error);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("Processing request timeout - please try again");
+      }
       if (error instanceof TypeError && error.message.includes("fetch")) {
         throw new Error(
           "Network error: Unable to connect to the mastering service. Please check your internet connection.",
@@ -191,20 +205,21 @@ export class AIMasteringAPI {
     error?: string;
   }> {
     const statusUrl = `${this.baseUrl}/api/status/${jobId}?api_key=${this.apiKey}`;
-    console.log("Checking status for job:", jobId, "URL:", statusUrl);
+    console.log("Checking status for job:", jobId);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch(statusUrl, {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
+          "Cache-Control": "no-cache",
         },
+        signal: controller.signal,
       });
 
-      console.log(
-        "Status check response:",
-        response.status,
-        response.statusText,
-      );
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -219,6 +234,9 @@ export class AIMasteringAPI {
       return result;
     } catch (error) {
       console.error("Status check error:", error);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("Status check timeout");
+      }
       if (error instanceof TypeError && error.message.includes("fetch")) {
         throw new Error(
           "Network error: Unable to connect to the mastering service. Please check your internet connection.",
@@ -233,8 +251,13 @@ export class AIMasteringAPI {
     onProgress?: (progress: number) => void,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
-      const pollInterval = setInterval(async () => {
+      let pollInterval = 1000; // Start with 1 second
+      let attempts = 0;
+      const maxAttempts = 150; // 5 minutes max with adaptive polling
+
+      const poll = async () => {
         try {
+          attempts++;
           const status = await this.checkProcessingStatus(jobId);
 
           if (onProgress) {
@@ -242,23 +265,29 @@ export class AIMasteringAPI {
           }
 
           if (status.status === "completed" && status.result_url) {
-            clearInterval(pollInterval);
             resolve(status.result_url);
+            return;
           } else if (status.status === "failed") {
-            clearInterval(pollInterval);
             reject(new Error(status.error || "Processing failed"));
+            return;
           }
+
+          if (attempts >= maxAttempts) {
+            reject(new Error("Processing timeout"));
+            return;
+          }
+
+          // Adaptive polling - increase interval over time
+          if (attempts > 10) pollInterval = 2000; // 2 seconds after 10 attempts
+          if (attempts > 30) pollInterval = 3000; // 3 seconds after 30 attempts
+
+          setTimeout(poll, pollInterval);
         } catch (error) {
-          clearInterval(pollInterval);
           reject(error);
         }
-      }, 2000); // Poll every 2 seconds
+      };
 
-      // Timeout after 5 minutes
-      setTimeout(() => {
-        clearInterval(pollInterval);
-        reject(new Error("Processing timeout"));
-      }, 300000);
+      poll();
     });
   }
 

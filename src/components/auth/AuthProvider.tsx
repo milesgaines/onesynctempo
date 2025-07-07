@@ -142,12 +142,15 @@ export function AuthProvider({
           }
         }
 
-        // Load user profile when signed in
+        // Load user profile when signed in (debounced)
         if (
           session?.user &&
           (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
         ) {
-          await refreshUserProfile();
+          // Debounce profile refresh to prevent excessive calls
+          setTimeout(() => {
+            refreshUserProfile();
+          }, 100);
         }
       } catch (error) {
         console.error("❌ [AUTH] Error in auth state change:", error);
@@ -228,12 +231,17 @@ export function AuthProvider({
     }
   };
 
-  // Load initial profile when user is available
+  // Load initial profile when user is available (memoized)
   useEffect(() => {
     if (user && !loading) {
-      refreshUserProfile();
+      // Use a timeout to prevent rapid successive calls
+      const timeoutId = setTimeout(() => {
+        refreshUserProfile();
+      }, 50);
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [user, loading]);
+  }, [user?.id, loading]); // Only depend on user.id to prevent unnecessary re-renders
 
   const signIn = async (email: string, password: string) => {
     console.log("🔐 [AUTH] Attempting sign in for:", email);

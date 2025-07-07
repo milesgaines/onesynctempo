@@ -65,9 +65,6 @@ import {
   UserProfile,
 } from "@/lib/supabaseClient";
 import {
-  createTrolleyRecipient,
-  createTrolleyPayout,
-  getTrolleyPayoutStatus,
   getRoyaltyAdvances,
   getStripePayouts,
   getStripeBalanceTransaction,
@@ -102,7 +99,7 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [accountDetails, setAccountDetails] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [showTrolleyDetails, setShowTrolleyDetails] = useState<boolean>(false);
+  const [showStripeDetails, setShowStripeDetails] = useState<boolean>(false);
 
   // Additional state for payment method fields
   const [routingNumber, setRoutingNumber] = useState<string>("");
@@ -309,31 +306,53 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
         return;
       }
 
-      let trolleyRecipientId = null;
-      let trolleyPayoutId = null;
+      let stripePayoutId = null;
+      let stripeExternalAccountId = null;
 
-      // Create or get Trolley recipient if using supported payment methods
-      if (["bank-transfer", "paypal"].includes(paymentMethod)) {
+      // Process payout through Stripe for supported payment methods
+      if (["bank-transfer"].includes(paymentMethod)) {
         try {
-          const recipient = await createTrolleyRecipient(
-            profile.email,
-            profile.name?.split(" ")[0] || "User",
-            profile.name?.split(" ").slice(1).join(" ") || "Name",
+          // Create external account for bank transfer
+          const externalAccountResponse = await supabase.functions.invoke(
+            "supabase-functions-stripe-payout-manager",
+            {
+              body: {
+                action: "create_external_account",
+                account_holder_name: profile.name || "User",
+                routing_number: routingNumber,
+                account_number: accountNumber,
+                country: "US",
+                currency: "usd",
+              },
+            },
           );
-          trolleyRecipientId = recipient.id;
 
-          // Process payout through Trolley
-          const payout = await createTrolleyPayout(
-            trolleyRecipientId,
-            amount,
-            "USD",
-            `Withdrawal request for ${amount} USD`,
-          );
-          trolleyPayoutId = payout.id;
-        } catch (trolleyError) {
+          if (externalAccountResponse.data?.success) {
+            stripeExternalAccountId = externalAccountResponse.data.data.id;
+
+            // Create payout to the external account
+            const payoutResponse = await supabase.functions.invoke(
+              "supabase-functions-stripe-payout-manager",
+              {
+                body: {
+                  action: "create_payout",
+                  amount: Math.round(amount * 100), // Convert to cents
+                  currency: "usd",
+                  destination: stripeExternalAccountId,
+                  description: `Withdrawal request for ${amount} USD`,
+                  method: "standard",
+                },
+              },
+            );
+
+            if (payoutResponse.data?.success) {
+              stripePayoutId = payoutResponse.data.data.id;
+            }
+          }
+        } catch (stripeError) {
           console.warn(
-            "Trolley payout failed, falling back to manual processing:",
-            trolleyError,
+            "Stripe payout failed, falling back to manual processing:",
+            stripeError,
           );
         }
       }
@@ -359,9 +378,9 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
             amount: amount,
             payment_method: paymentMethod || "Bank Transfer",
             account_details: finalAccountDetails,
-            status: trolleyPayoutId ? "processing" : "pending",
-            trolley_recipient_id: trolleyRecipientId,
-            trolley_payout_id: trolleyPayoutId,
+            status: stripePayoutId ? "processing" : "pending",
+            stripe_external_account_id: stripeExternalAccountId,
+            stripe_payout_id: stripePayoutId,
           },
         ])
         .select()
@@ -403,13 +422,13 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
       setConfirmAccountNumber("");
       setPaypalEmail("");
 
-      const message = trolleyPayoutId
-        ? "Withdrawal request submitted and is being processed through Trolley!"
+      const message = stripePayoutId
+        ? "Withdrawal request submitted and is being processed through Stripe!"
         : "Withdrawal request submitted successfully!";
       alert(message);
 
-      // Show Trolley details after submission for better visibility
-      setShowTrolleyDetails(true);
+      // Show Stripe details after submission for better visibility
+      setShowStripeDetails(true);
     } catch (error) {
       console.error("Error submitting withdrawal:", error);
       alert("Failed to submit withdrawal request. Please try again.");
@@ -1316,10 +1335,9 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
                       className="flex items-center"
                     >
                       Payment Method
-                      {(paymentMethod === "bank-transfer" ||
-                        paymentMethod === "paypal") && (
+                      {paymentMethod === "bank-transfer" && (
                         <Badge className="ml-2 bg-blue-500">
-                          Trolley Enabled
+                          Stripe Enabled
                         </Badge>
                       )}
                     </Label>
@@ -1338,7 +1356,7 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
                         >
                           <div className="flex items-center">
                             Bank Transfer
-                            <Globe className="ml-2 h-3 w-3 text-blue-600" />
+                            <CreditCard className="ml-2 h-3 w-3 text-blue-600" />
                           </div>
                         </SelectItem>
                         <SelectItem
@@ -1347,17 +1365,22 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
                         >
                           <div className="flex items-center">
                             PayPal
-                            <Globe className="ml-2 h-3 w-3 text-blue-600" />
+                            <Globe className="ml-2 h-3 w-3 text-orange-600" />
                           </div>
                         </SelectItem>
                         <SelectItem value="check">Check</SelectItem>
                       </SelectContent>
                     </Select>
-                    {(paymentMethod === "bank-transfer" ||
-                      paymentMethod === "paypal") && (
+                    {paymentMethod === "bank-transfer" && (
                       <p className="text-xs text-blue-600 flex items-center">
                         <Info className="h-3 w-3 mr-1" />
-                        Processed via Trolley for faster global payments
+                        Processed via Stripe for secure bank transfers
+                      </p>
+                    )}
+                    {paymentMethod === "paypal" && (
+                      <p className="text-xs text-orange-600 flex items-center">
+                        <Info className="h-3 w-3 mr-1" />
+                        PayPal withdrawals processed manually - contact support
                       </p>
                     )}
                   </div>
@@ -1602,12 +1625,12 @@ const EarningsManager: React.FC<EarningsManagerProps> = () => {
                   </span>
                 </div>
 
-                {/* Trolley Integration Status Indicator */}
+                {/* Stripe Integration Status Indicator */}
                 <div className="mt-3 flex items-center text-sm bg-blue-50 text-blue-700 p-3 rounded-md border border-blue-200">
-                  <Globe className="mr-2 h-4 w-4 flex-shrink-0 text-blue-600" />
+                  <CreditCard className="mr-2 h-4 w-4 flex-shrink-0 text-blue-600" />
                   <span>
-                    <strong>Trolley (Route1964)</strong> integration active for
-                    global payouts
+                    <strong>Stripe</strong> integration active for secure
+                    payouts
                   </span>
                 </div>
               </CardFooter>

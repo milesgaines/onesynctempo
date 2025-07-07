@@ -255,6 +255,10 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
 
   // Extract loadReleases function to make it reusable
   const loadReleases = async (showToasts = true) => {
+    console.log(
+      "🔄 [RELEASES] Starting loadReleases function with showToasts=",
+      showToasts,
+    );
     // Call the onRefresh callback if provided
     if (onRefresh) {
       onRefresh();
@@ -534,6 +538,20 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
     }
   };
 
+  // Make refreshReleases available globally for other components to call
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // @ts-ignore - Adding a custom method to window
+      window.refreshReleases = refreshReleases;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        // @ts-ignore - Cleanup
+        delete window.refreshReleases;
+      }
+    };
+  }, [user]);
+
   // Listen for track upload events to refresh the list
   useEffect(() => {
     const handleTrackUploaded = (event: CustomEvent) => {
@@ -587,10 +605,63 @@ const ReleasesManager: React.FC<ReleasesManagerProps> = ({ onRefresh }) => {
             : [],
         };
 
-        // Add the new track to the beginning of the releases array
-        // Note: This is a simplified approach - in a real app you'd want to
-        // create a proper release from the track data
-        console.log("📝 [RELEASES] New track processed:", processedTrack);
+        // Create a temporary release from the track data to show immediately
+        const tempRelease: Release = {
+          id: newTrack.id,
+          title: newTrack.title || "Untitled Release",
+          primary_artist: newTrack.artist || "Unknown Artist",
+          display_artist: newTrack.display_artist,
+          featured_artist: newTrack.featured_artist,
+          release_type: newTrack.release_type || "Single",
+          main_genre: newTrack.genre || "Other",
+          sub_genre: newTrack.sub_genre,
+          release_date:
+            newTrack.release_date || new Date().toISOString().split("T")[0],
+          status: "pending",
+          total_plays: 0,
+          total_revenue: 0,
+          track_count: 1,
+          artwork_url:
+            newTrack.artwork_url ||
+            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=80",
+          platforms: Array.isArray(newTrack.platforms)
+            ? newTrack.platforms.map((platformId) => {
+                const platformMap = {
+                  spotify: "Spotify",
+                  apple: "Apple Music",
+                  youtube: "YouTube Music",
+                  amazon: "Amazon Music",
+                  tidal: "Tidal",
+                  deezer: "Deezer",
+                  pandora: "Pandora",
+                  soundcloud: "SoundCloud",
+                };
+                return platformMap[platformId] || platformId;
+              })
+            : [],
+          tracks: [
+            {
+              id: newTrack.id,
+              title: newTrack.title || "Untitled Track",
+              track_number: 1,
+              duration: newTrack.duration || "3:45",
+              plays: 0,
+              revenue: 0,
+              audio_file_url:
+                newTrack.audio_file_url ||
+                (newTrack.audio_file_urls && newTrack.audio_file_urls.length > 0
+                  ? newTrack.audio_file_urls[0]
+                  : undefined),
+            },
+          ],
+        };
+
+        // Add the new release to the beginning of the releases array for immediate feedback
+        setReleases((prevReleases) => [tempRelease, ...prevReleases]);
+        console.log(
+          "📝 [RELEASES] Added temporary release to UI:",
+          tempRelease,
+        );
 
         const toastId = toast.loading(
           "New track uploaded! Syncing with database...",

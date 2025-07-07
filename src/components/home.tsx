@@ -337,15 +337,29 @@ const HomePage = () => {
   return (
     <>
       <Toaster />
-      <div className="flex h-screen w-full overflow-hidden bg-background relative">
+      <div className="flex h-screen w-full overflow-hidden bg-background relative particles">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-glow"></div>
+          <div
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse-glow"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div
+            className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl animate-pulse-glow"
+            style={{ animationDelay: "2s" }}
+          ></div>
+        </div>
         {/* Sidebar - hidden on mobile */}
-        <div className="hidden md:flex flex-col w-64 border-r bg-card/90 backdrop-blur-md shadow-lg z-20">
-          <div className="p-4 border-b">
+        <div className="hidden md:flex flex-col w-64 border-r bg-glass border-glow shadow-neon z-20 relative overflow-hidden">
+          {/* Sidebar gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
+          <div className="p-4 border-b border-primary/20 relative z-10">
             <div className="flex items-center space-x-2">
               <img
                 src="/onesync-logo-white.png"
                 alt="OneSync Logo"
-                className="h-8 w-auto mr-2"
+                className="h-8 w-auto mr-2 drop-shadow-lg"
                 onError={(e) => {
                   console.error("❌ [LOGO] Failed to load logo:", e);
                   console.error("❌ [LOGO] Image src:", e.currentTarget.src);
@@ -388,7 +402,7 @@ const HomePage = () => {
             </div>
           </div>
 
-          <nav className="flex-1 p-4 space-y-6">
+          <nav className="flex-1 p-4 space-y-6 relative z-10">
             <div>
               <p className="text-xs font-semibold text-muted-foreground mb-2 px-2">
                 OVERVIEW
@@ -401,7 +415,7 @@ const HomePage = () => {
                         variant={
                           activeTab === "dashboard" ? "default" : "ghost"
                         }
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("dashboard");
                           // Scroll to top immediately
@@ -434,7 +448,7 @@ const HomePage = () => {
                         variant={
                           activeTab === "analytics" ? "default" : "ghost"
                         }
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("analytics");
                           // Scroll to top immediately
@@ -473,7 +487,7 @@ const HomePage = () => {
                     <TooltipTrigger asChild>
                       <Button
                         variant={activeTab === "music" ? "default" : "ghost"}
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("music");
                           // Scroll to top immediately
@@ -504,7 +518,7 @@ const HomePage = () => {
                     <TooltipTrigger asChild>
                       <Button
                         variant={activeTab === "beats" ? "default" : "ghost"}
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("beats");
                           // Scroll to top immediately
@@ -537,10 +551,10 @@ const HomePage = () => {
                         variant={
                           activeTab === "ai-mastering" ? "web3" : "ghost"
                         }
-                        className={`w-full justify-start relative overflow-hidden group transition-all duration-300 ${
+                        className={`w-full justify-start relative overflow-hidden group transition-all duration-300 hover-lift ${
                           activeTab === "ai-mastering"
                             ? "shadow-neon border-primary/50 bg-gradient-web3"
-                            : "hover:shadow-cyber hover:border-primary/30"
+                            : "hover:shadow-cyber hover:border-primary/30 hover:bg-primary/10"
                         }`}
                         onClick={() => {
                           setActiveTab("ai-mastering");
@@ -584,7 +598,7 @@ const HomePage = () => {
                     <TooltipTrigger asChild>
                       <Button
                         variant={activeTab === "earnings" ? "default" : "ghost"}
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("earnings");
                           // Scroll to top immediately
@@ -617,7 +631,7 @@ const HomePage = () => {
                         variant={
                           activeTab === "contracts" ? "default" : "ghost"
                         }
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("contracts");
                           // Scroll to top immediately
@@ -648,7 +662,7 @@ const HomePage = () => {
                     <TooltipTrigger asChild>
                       <Button
                         variant={activeTab === "artists" ? "default" : "ghost"}
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("artists");
                           // Scroll to top immediately
@@ -680,7 +694,7 @@ const HomePage = () => {
                     <TooltipTrigger asChild>
                       <Button
                         variant={activeTab === "settings" ? "default" : "ghost"}
-                        className="w-full justify-start"
+                        className="w-full justify-start hover-lift transition-all duration-300 hover:shadow-glow hover:bg-primary/10"
                         onClick={() => {
                           setActiveTab("settings");
                           // Scroll to top immediately
@@ -710,14 +724,18 @@ const HomePage = () => {
             </div>
           </nav>
 
-          <div className="p-4 border-t mt-auto">
-            <div className="flex items-center">
-              <Avatar className="h-9 w-9">
+          <div className="p-4 border-t border-primary/20 mt-auto relative z-10">
+            <div className="flex items-center bg-glass-light rounded-lg p-3 hover-lift">
+              <Avatar className="h-9 w-9 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary-foreground font-bold">
+                  {user.name.charAt(0)}
+                </AvatarFallback>
               </Avatar>
               <div className="ml-3">
-                <p className="text-sm font-medium">{user.name}</p>
+                <p className="text-sm font-medium text-gradient-static">
+                  {user.name}
+                </p>
                 <p className="text-xs text-muted-foreground">{user.role}</p>
               </div>
             </div>
@@ -1024,8 +1042,10 @@ const HomePage = () => {
         {/* Main content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <header className="border-b bg-card shadow-sm sticky top-0">
-            <div className="flex h-16 items-center px-4">
+          <header className="border-b border-primary/20 bg-glass shadow-neon sticky top-0 z-30 backdrop-blur-xl">
+            {/* Header gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none"></div>
+            <div className="flex h-16 items-center px-4 relative z-10">
               <Button
                 variant="ghost"
                 size="icon"
@@ -1040,7 +1060,7 @@ const HomePage = () => {
                   <input
                     type="text"
                     placeholder="Search..."
-                    className="h-9 w-40 lg:w-64 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring pl-8"
+                    className="h-9 w-40 lg:w-64 rounded-md border border-primary/30 bg-glass px-3 py-1 text-sm shadow-glow transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:shadow-neon pl-8 hover:border-primary/50"
                   />
                   <svg
                     className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
@@ -1066,11 +1086,11 @@ const HomePage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="relative hover:bg-accent z-50"
+                      className="relative hover:bg-primary/10 hover:shadow-glow transition-all duration-300 z-50"
                     >
                       <Bell className="h-5 w-5" />
                       {totalUnreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-medium pointer-events-none">
+                        <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs flex items-center justify-center font-medium pointer-events-none animate-pulse shadow-glow">
                           {totalUnreadCount > 9 ? "9+" : totalUnreadCount}
                         </span>
                       )}
@@ -1162,7 +1182,11 @@ const HomePage = () => {
                   </PopoverContent>
                 </Popover>
 
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-primary/10 hover:shadow-glow transition-all duration-300"
+                >
                   <Share2 className="h-5 w-5" />
                 </Button>
 
@@ -1170,11 +1194,13 @@ const HomePage = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="relative h-8 w-8 rounded-full"
+                      className="relative h-8 w-8 rounded-full hover:shadow-glow transition-all duration-300"
                     >
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-8 w-8 ring-2 ring-primary/30 ring-offset-2 ring-offset-background">
                         <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary-foreground font-bold">
+                          {user.name.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
@@ -1213,11 +1239,13 @@ const HomePage = () => {
           </header>
 
           {/* Main content area */}
-          <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 pb-40 min-h-0">
+          <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 pb-40 min-h-0 relative">
+            {/* Content background effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/2 to-transparent pointer-events-none"></div>
             {/* Breadcrumb */}
-            <div className="flex items-center justify-between mb-4 bg-card p-2 rounded-lg border shadow-sm">
+            <div className="flex items-center justify-between mb-4 bg-glass p-4 rounded-xl border-glow shadow-neon animate-slide-up relative z-10">
               <div className="flex items-center">
-                <span className="text-sm font-medium">
+                <span className="text-lg font-bold text-gradient">
                   {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
                 </span>
               </div>
@@ -1228,8 +1256,8 @@ const HomePage = () => {
                 <DialogTrigger asChild>
                   <Button
                     size="sm"
-                    variant="outline"
-                    className="flex items-center gap-1"
+                    variant="web3"
+                    className="flex items-center gap-2 hover-lift shadow-glow hover:shadow-neon transition-all duration-300"
                     data-upload-trigger
                   >
                     <Plus className="h-4 w-4" />
@@ -1255,15 +1283,29 @@ const HomePage = () => {
             </div>
             {isLoading ? (
               <div className="flex items-center justify-center h-full">
-                <div className="flex flex-col items-center">
-                  <img
-                    src="/spinning-loader.png"
-                    alt="Loading"
-                    className="h-12 w-12 animate-spin brightness-150 mb-4"
-                  />
-                  <p className="text-muted-foreground">
+                <div className="flex flex-col items-center animate-fade-in">
+                  <div className="relative">
+                    <img
+                      src="/spinning-loader.png"
+                      alt="Loading"
+                      className="h-16 w-16 animate-spin brightness-150 mb-6 drop-shadow-lg"
+                    />
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+                  </div>
+                  <p className="text-muted-foreground text-lg font-medium">
                     Loading your dashboard...
                   </p>
+                  <div className="mt-4 flex space-x-1">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -1273,9 +1315,10 @@ const HomePage = () => {
                     onDismiss={() => setShowWelcomeBanner(false)}
                   />
                 )}
-                <div className="w-full overflow-hidden">
+                <div className="w-full overflow-hidden animate-fade-in relative z-10">
                   {activeTab === "dashboard" && <DashboardOverview />}
                   {activeTab === "analytics" && <AnalyticsCharts />}
+
                   {activeTab === "music" && <ReleasesManager />}
                   {activeTab === "beats" && (
                     <div className="space-y-8 max-w-4xl mx-auto">
@@ -1449,7 +1492,11 @@ const HomePage = () => {
                       </Card>
                     </div>
                   )}
-                  {activeTab === "ai-mastering" && <AIMasteringInterface />}
+                  {activeTab === "ai-mastering" && (
+                    <div className="w-full">
+                      <AIMasteringInterface />
+                    </div>
+                  )}
                   {activeTab === "earnings" && <EarningsManager />}
                   {activeTab === "contracts" && (
                     <div className="space-y-6">

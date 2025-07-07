@@ -2,7 +2,7 @@
 import { supabase } from "./supabaseClient";
 
 // Spotify API configuration
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || "";
+const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const SPOTIFY_REDIRECT_URI = `${window.location.origin}/auth/spotify-callback`;
 const SPOTIFY_SCOPES = [
   "user-read-private",
@@ -32,9 +32,15 @@ const generateRandomString = (length: number): string => {
  */
 export const initiateSpotifyAuth = async (): Promise<void> => {
   if (!SPOTIFY_CLIENT_ID) {
+    console.error("VITE_SPOTIFY_CLIENT_ID environment variable is not set");
     console.error("Spotify Client ID is not configured");
     throw new Error("Spotify Client ID is not configured");
   }
+
+  console.log(
+    "🎵 [SPOTIFY] Initiating Spotify auth with Client ID:",
+    SPOTIFY_CLIENT_ID.substring(0, 8) + "...",
+  );
 
   // Generate and store state for CSRF protection
   const state = generateRandomString(16);
@@ -47,6 +53,9 @@ export const initiateSpotifyAuth = async (): Promise<void> => {
   authUrl.searchParams.append("redirect_uri", SPOTIFY_REDIRECT_URI);
   authUrl.searchParams.append("state", state);
   authUrl.searchParams.append("scope", SPOTIFY_SCOPES);
+
+  console.log("🎵 [SPOTIFY] Redirect URI:", SPOTIFY_REDIRECT_URI);
+  console.log("🎵 [SPOTIFY] Auth URL:", authUrl.toString());
 
   // Redirect to Spotify authorization page
   window.location.href = authUrl.toString();

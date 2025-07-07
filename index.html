@@ -1,10 +1,92 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>OneSync - Music Distribution Platform</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        background: #0a0a0f !important;
+        color: #ffffff !important;
+        min-height: 100vh;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(
+          135deg,
+          #000000 0%,
+          #0a0a0f 25%,
+          #0f0f1a 50%,
+          #1a1a2e 75%,
+          #000000 100%
+        ) !important;
+        color: #ffffff !important;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        min-height: 100vh;
+        animation: gradientShift 20s ease-in-out infinite;
+      }
+      #root {
+        min-height: 100vh;
+        background: transparent !important;
+        color: #ffffff !important;
+      }
+      .dark {
+        color-scheme: dark;
+      }
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background: linear-gradient(
+            135deg,
+            #000000 0%,
+            #0a0a0f 25%,
+            #0f0f1a 50%,
+            #1a1a2e 75%,
+            #000000 100%
+          );
+        }
+        25% {
+          background: linear-gradient(
+            135deg,
+            #0a0a0f 0%,
+            #0f0f1a 25%,
+            #1a1a2e 50%,
+            #000000 75%,
+            #0a0a0f 100%
+          );
+        }
+        50% {
+          background: linear-gradient(
+            135deg,
+            #0f0f1a 0%,
+            #1a1a2e 25%,
+            #000000 50%,
+            #0a0a0f 75%,
+            #0f0f1a 100%
+          );
+        }
+        75% {
+          background: linear-gradient(
+            135deg,
+            #1a1a2e 0%,
+            #000000 25%,
+            #0a0a0f 50%,
+            #0f0f1a 75%,
+            #1a1a2e 100%
+          );
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
