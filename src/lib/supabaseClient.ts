@@ -80,8 +80,7 @@ supabase
         "✅ [SUPABASE] Database is properly configured and accessible",
       );
     }
-  })
-  .catch((err) => {
+  }).then(undefined, (err) => {
     console.error(
       "❌ [SUPABASE] Exception during initial connection test:",
       err,
